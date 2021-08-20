@@ -97,8 +97,29 @@ a{
 .dni{
     display: none !important;
 }
-
-
+.nona{
+    display: none;
+}
+.taskList > li{
+    list-style-type: none;
+    margin: 0;
+    margin-top: 20px;
+    border: 2px solid black;
+    padding: 10px !important;
+    border-radius: 5px;
+    box-shadow: 0px 10px 1px #ddd, 0 10px 20px #ccc;
+}
+.taskList{
+    margin: 0%;
+    padding: 0;
+}
+.headerTodo{
+    background-color: rgb(211, 209, 209) !important;
+    margin: 10px;
+    box-shadow: 0px 10px 1px #ddd, 0 10px 20px #ccc;
+    border-radius: 5px !important;
+    border-bottom: 5px solid black !important;
+}
 
 
 

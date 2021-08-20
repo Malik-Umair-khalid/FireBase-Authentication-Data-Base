@@ -5,9 +5,15 @@ firebase.auth().onAuthStateChanged((user) => {
     lagInBtn.style.display = "none";
     let profile = document.getElementById("profile")
     profile.style.display = "block";
+    let todos = document.getElementById("todos")
+    todos.style.display = "block";
     document.getElementById("lagOutBtn").style.display = "block";
-  } else {
-
+    let loaderGif = document.getElementById("loaderGif")
+    loaderGif.style.display = "none"
+    console.log(loader)
+  } else if (!user) {
+    let loaderGif = document.getElementById("loaderGif")
+    loaderGif.style.display = "none"
   }
 });
 
@@ -21,11 +27,12 @@ const signIn = () => {
   let passward = document.getElementById("passward")
   let regForName = /^[a-z ,.'-]+$/i
   let regForMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
+
   for (var i = 0; i < gender.length; i++) {
     if (gender[i].checked) {
       gender = gender[i].value
     }
-  }
+             }
   let userInfo = {
     name: name.value,
     address: address.value,
@@ -96,6 +103,7 @@ const signIn = () => {
           .then(() => {
               var errorDiv = document.getElementById("errorDiv")
               errorDiv.style.color = 'green'
+              localStorage.setItem("uid", res.user.uid)
               errorDiv.style.fontSize = "15px"
               errorDiv.innerText = "You Are Successfully Signed In"
               signBtn.style.display = "block"
@@ -146,28 +154,26 @@ const login = () => {
     firebase.auth().signInWithEmailAndPassword(email.value, passward.value)
       .then((res) => {
         var user = res.user;
-
-        firebase.database().ref(`users/${user.uid}`)
-          .once('value', (userInfo) => {
-            console.log(userInfo.val())
-            localStorage.setItem("userInformation", JSON.stringify(userInfo.val()))
-
-            var errorDiv = document.getElementById("errorDiv")
-            errorDiv.style.color = 'green'
-            errorDiv.innerText = "You Are Successfully Signed In"
-            signBtn.style.display = "block"
-            loader.style.display = "none"
-            setTimeout(() => {
-              document.getElementById("modelClose").click()
-            }, 1000)
-
-          })
+        let navIcon = document.getElementById("navIcon")
+        navIcon.click()
+        var errorDiv = document.getElementById("errorDiv")
+        errorDiv.style.color = 'green'
+        errorDiv.innerText = "You Are Successfully Signed In"
+        signBtn.style.display = "block"
+        loader.style.display = "none"
+        setTimeout(() => {
+          document.getElementById("modelClose").click()
+        }, 1000)
+        localStorage.setItem("uid", user.uid)
           
       })
       .catch((error) => {
+        let navIcon = document.getElementById("navIcon")
+        navIcon.click()
         var errorMessage = error.message;
         var errorDiv = document.getElementById("errorDiv")
         errorDiv.innerText = errorMessage
+        errorDiv.style.color = "red"
         console.log(errorMessage)
         signBtn.style.display = "block"
         loader.style.display = "none"
@@ -178,11 +184,15 @@ const login = () => {
 function logout(){
   firebase.auth().signOut()
   .then(() =>{
+    localStorage.removeItem("uid")
     lagInBtn.style.display = "block"
     document.getElementById("lagOutBtn").style.display = "none"
+    let todos = document.getElementById("todos")
+    todos.style.display = "none";
     let profile = document.getElementById("profile")
-    localStorage.removeItem("userInformation")
+    localStorage.removeItem("uid")
     profile.style.display = "none"
-    console.log("log Out Hofiya")
+    let navIcon = document.getElementById("navIcon")
+    navIcon.click()
   })
 }
