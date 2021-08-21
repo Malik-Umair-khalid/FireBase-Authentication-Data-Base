@@ -11,6 +11,7 @@ firebase.auth().onAuthStateChanged((user) => {
             document.getElementById("dob").innerText = details.dob
             document.getElementById("address").innerText = details.address
             document.getElementById("mail").innerText = details.email
+            document.getElementById("profile").src = details.profileImage
             let infoDiv = document.getElementById("infoDiv")
             let loaderGif = document.getElementById("loader")
             infoDiv.style.display = "block"
@@ -81,4 +82,57 @@ const editProfile = () =>{
     let bandkaro = document.getElementById("bandkaro")
     bandkaro.click()
 }
-  
+
+let uploadImage = (file) =>{
+  return new Promise((resolve, reject) =>{  
+  if(file){ 
+    let bar = document.getElementById("bar")
+  let storagref = firebase.storage().ref(`profileImage/${file.name}`)
+   let uploading =  storagref.put(file)
+    uploading.on('state_changed',
+    (snapshot) => {
+       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+       bar.style.width = Math.round(progress.toFixed()) + "%";
+       bar.innerHTML = Math.round(progress.toFixed()) + "%";
+       if(bar.style.width == "100%"){
+        bar.style.width = "0%"
+        bar.innerHTML = ""
+        swal("Good Job!", "Image Added Successfully!", "success");     
+       }
+       bar.innerHTML = Math.round(progress.toFixed()) + "%";
+       switch (snapshot.state) {
+           case firebase.storage.TaskState.PAUSED:
+               console.log('Upload is paused');
+               break;
+           case firebase.storage.TaskState.RUNNING:
+               console.log('Upload is running');
+               break;
+       }
+   },
+   (error) => {
+       reject(error)
+   },
+   () => {
+       uploading.snapshot.ref.getDownloadURL().then((downloadURL) => {
+           resolve(downloadURL)
+       });
+   }
+);
+
+  }
+  else{
+    swal("Noop!", "Please Add The Image!", "warning");
+  }
+})
+}
+
+
+let editProfileImage = async () =>{
+  let profilePic = document.getElementById("profilePic")
+  console.log(profilePic)
+  let image = await uploadImage(profilePic.files[0]);
+  let userId = localStorage.getItem("uid")
+  firebase.database().ref(`users/${userId}`).update({profileImage: image})
+  document.getElementById("profile").src = image
+  document.getElementById("celase").click() 
+}

@@ -16,18 +16,63 @@ firebase.auth().onAuthStateChanged((user) => {
     loaderGif.style.display = "none"
   }
 });
+let uploadImage = (file) =>{
+  return new Promise((resolve, reject) =>{  
+  if(file){ 
+    let bar = document.getElementById("bar")
+  let storagref = firebase.storage().ref(`profileImage/${file.name}`)
+   let uploading =  storagref.put(file)
+    uploading.on('state_changed',
+    (snapshot) => {
+       var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+       bar.style.width = Math.round(progress.toFixed()) + "%";
+       bar.innerHTML = Math.round(progress.toFixed()) + "%";
+       if(bar.style.width == "100%"){
+        bar.style.width = "0%"
+        bar.innerHTML = ""
+        swal("Good Job!", "Image Added Successfully!", "success");     
+       }
+       bar.innerHTML = Math.round(progress.toFixed()) + "%";
+       switch (snapshot.state) {
+           case firebase.storage.TaskState.PAUSED:
+               console.log('Upload is paused');
+               break;
+           case firebase.storage.TaskState.RUNNING:
+               console.log('Upload is running');
+               break;
+       }
+   },
+   (error) => {
+       reject(error)
+   },
+   () => {
+       uploading.snapshot.ref.getDownloadURL().then((downloadURL) => {
+           resolve(downloadURL)
+       });
+   }
+);
 
-const signIn = () => {
+  }
+  else{
+    swal("Noop!", "Please Add The Image!", "warning");
+  }
+})
+}
+
+const signIn = async  () => {
   let name = document.getElementById("name")
   let contact = document.getElementById("contact")
   let dob = document.getElementById("dob")
   let gender = document.getElementsByName("gender")
   let address = document.getElementById("address")
   let email = document.getElementById("email")
+  let profile = document.getElementById("profile")
   let passward = document.getElementById("passward")
   let regForName = /^[a-z ,.'-]+$/i
   let regForMail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g
 
+  let image = await uploadImage(profile.files[0])
+  
   for (var i = 0; i < gender.length; i++) {
     if (gender[i].checked) {
       gender = gender[i].value
@@ -38,6 +83,7 @@ const signIn = () => {
     address: address.value,
     contact: contact.value,
     dob: dob.value,
+    profileImage: image,
     gender,
     email: email.value
   }
@@ -194,5 +240,36 @@ function logout(){
     profile.style.display = "none"
     let navIcon = document.getElementById("navIcon")
     navIcon.click()
+  })
+}
+
+
+
+
+
+let uploadFiles = (file) => {
+  return new Promise((resolve, reject) => {
+      let storageRef = firebase.storage().ref(`myfolder/todayImages/${file.name}`);
+      let uploading = storageRef.put(file)
+      uploading.on('state_changed',
+          (snapshot) => {
+              switch (snapshot.state) {
+                  case firebase.storage.TaskState.PAUSED:
+                      console.log('Upload is paused');
+                      break;
+                  case firebase.storage.TaskState.RUNNING:
+                      console.log('Upload is running');
+                      break;
+              }
+          },
+          (error) => {
+              reject(error)
+          },
+          () => {
+              uploading.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                  resolve(downloadURL)
+              });
+          }
+      );
   })
 }

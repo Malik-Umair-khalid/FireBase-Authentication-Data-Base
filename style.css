@@ -120,7 +120,27 @@ a{
     border-radius: 5px !important;
     border-bottom: 5px solid black !important;
 }
-
+.profileImage{
+    border: 5px solid black;
+    width: 200px;
+    height: 200px;
+   border-radius: 100px;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   margin: 0 auto;
+   position: relative;
+   overflow-y: hidden; 
+}
+.camera{
+    /* position: absolute;
+    top: 0;
+    right: 0;
+    /* font-size: 30px; */ 
+    font-size: 40px !important;
+    color: #21618C;
+    cursor: pointer;
+}
 
 
 

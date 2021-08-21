@@ -45,17 +45,10 @@ let deleteAll = () =>{
   taskList.innerHTML = ""
 }
 
-
-
-  function deleteBtn(btn, key){
-    btn.parentNode.remove()
-
-
-
-
-    
-    firebase.database().ref(`users/${uid}/userTodos/${key}`).remove()
-  }
+function deleteBtn(btn, key){
+ btn.parentNode.remove()
+firebase.database().ref(`users/${uid}/userTodos/${key}`).remove()
+ }
   
   function edit(key) {
 
@@ -88,3 +81,4 @@ let deleteAll = () =>{
       window.location = "index.html"
     })
   }
+  
